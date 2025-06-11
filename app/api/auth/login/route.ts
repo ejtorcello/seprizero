@@ -1,39 +1,47 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { UsuarioModel } from "@/lib/models/Usuario"
-import jwt from "jsonwebtoken"
-
-const JWT_SECRET = process.env.JWT_SECRET || "clinica-secret-key"
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password } = await request.json()
+    console.log("🔐 Iniciando proceso de login...")
 
-    console.log("🔐 Intento de login:", { username })
+    const { username, password } = await request.json()
+    console.log("📝 Datos recibidos:", { username, password: password ? "***" : "vacío" })
 
     if (!username || !password) {
+      console.log("❌ Faltan datos")
       return NextResponse.json({ error: "Username y password son requeridos" }, { status: 400 })
     }
 
+    // Verificar conexión a la base de datos
+    const dbConnected = UsuarioModel.testConnection()
+    if (!dbConnected) {
+      console.log("❌ Error de conexión a la base de datos")
+      return NextResponse.json({ error: "Error de conexión a la base de datos" }, { status: 500 })
+    }
+
+    // Buscar usuario
     const usuario = UsuarioModel.findByUsername(username)
     console.log("👤 Usuario encontrado:", usuario ? "Sí" : "No")
 
-    if (!usuario || usuario.password !== password) {
-      console.log("❌ Credenciales inválidas")
-      return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 })
+    if (!usuario) {
+      console.log("❌ Usuario no encontrado")
+      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 401 })
     }
 
-    const token = jwt.sign(
-      {
-        id: usuario.id,
-        username: usuario.username,
-        rol: usuario.rol,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-      },
-      JWT_SECRET,
-      { expiresIn: "8h" },
-    )
+    // Verificar contraseña (texto plano)
+    console.log("🔑 Verificando contraseña...")
+    console.log("🔑 Contraseña en BD:", usuario.password)
+    console.log("🔑 Contraseña ingresada:", password)
 
+    if (usuario.password !== password) {
+      console.log("❌ Contraseña incorrecta")
+      return NextResponse.json({ error: "Contraseña incorrecta" }, { status: 401 })
+    }
+
+    console.log("✅ Login exitoso")
+
+    // Crear respuesta simple (sin JWT por ahora)
     const response = NextResponse.json({
       message: "Login exitoso",
       user: {
@@ -45,17 +53,33 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 60 * 60 * 8, // 8 horas
-    })
+    // Guardar datos del usuario en una cookie simple
+    response.cookies.set(
+      "user",
+      JSON.stringify({
+        id: usuario.id,
+        username: usuario.username,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        rol: usuario.rol,
+      }),
+      {
+        httpOnly: false, // Para que sea accesible desde el cliente
+        secure: false,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 8, // 8 horas
+      },
+    )
 
-    console.log("✅ Login exitoso para:", usuario.username)
     return response
   } catch (error) {
     console.error("❌ Error en login:", error)
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: "Error interno del servidor",
+        details: error.message,
+      },
+      { status: 500 },
+    )
   }
 }
