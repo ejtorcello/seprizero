@@ -42,9 +42,9 @@ export function ClinicaLogoText({ className = "" }: { className?: string }) {
       <ClinicaLogo size="lg" />
       <div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-          Clínica San Martín
+          SEPRICE
         </h1>
-        <p className="text-sm text-gray-600 font-medium">Centro Médico Integral</p>
+        <p className="text-sm text-gray-600 font-medium">Centro de Diagnóstico</p>
       </div>
     </div>
   )

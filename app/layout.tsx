@@ -16,11 +16,11 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Clínica San Martín - Sistema de Gestión Médica",
+  title: "SEPRICE - Sistema de Gestión Médica",
   description:
     "Sistema integral de gestión clínica para consultorios externos y estudios clínicos. Administración de turnos, pacientes, estudios médicos y liquidaciones.",
-  keywords: "clínica, gestión médica, turnos, pacientes, estudios clínicos, sistema hospitalario",
-  authors: [{ name: "Clínica San Martín" }],
+  keywords: "clínica, gestión médica, turnos, pacientes, estudios clínicos, sistema hospitalario, SEPRICE",
+  authors: [{ name: "SEPRICE" }],
   viewport: "width=device-width, initial-scale=1",
     generator: 'v0.dev'
 }
