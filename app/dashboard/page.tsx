@@ -3,9 +3,9 @@
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card-simple"
+import { Button } from "@/components/ui/button-simple"
+import { Badge } from "@/components/ui/badge-simple"
 import {
   Calendar,
   Users,
