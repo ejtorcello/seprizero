@@ -174,7 +174,7 @@ export default function DashboardPage() {
               <ClinicaLogo size="md" />
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  Clínica San Martín
+                  SEPRICE
                 </h1>
                 <p className="text-sm text-gray-600">Sistema de Gestión Médica</p>
               </div>
@@ -293,7 +293,7 @@ export default function DashboardPage() {
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500">© 2024 Clínica San Martín - Sistema de Gestión Médica v1.0</p>
+          <p className="text-sm text-gray-500">© 2024 SEPRICE - Sistema de Gestión Médica v1.0</p>
         </div>
       </div>
     </div>

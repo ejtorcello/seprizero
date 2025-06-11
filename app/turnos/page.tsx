@@ -21,6 +21,7 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react"
+import { TurnoForm } from "@/components/forms/TurnoForm"
 
 interface Turno {
   id: number
@@ -46,6 +47,7 @@ export default function TurnosPage() {
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0])
   const [searchTerm, setSearchTerm] = useState("")
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -125,7 +127,7 @@ export default function TurnosPage() {
                 <p className="text-gray-600">Administra los turnos médicos</p>
               </div>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button onClick={() => setShowForm(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Nuevo Turno
             </Button>
@@ -336,6 +338,17 @@ export default function TurnosPage() {
               </Card>
             )}
           </div>
+        )}
+        {/* Modal de formulario de turno */}
+        {showForm && (
+          <TurnoForm
+            onClose={() => setShowForm(false)}
+            onSave={(newTurno) => {
+              // Actualizar la lista de turnos
+              setTurnos((prev) => [...prev, newTurno])
+              loadTurnos() // Recargar la lista
+            }}
+          />
         )}
       </div>
     </div>

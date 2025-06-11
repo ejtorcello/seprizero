@@ -6,10 +6,10 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card-simple"
 import { Button } from "@/components/ui/button-simple"
 import { Input } from "@/components/ui/input-simple"
-import { Label } from "@/components/ui/label-simple"
 import { Badge } from "@/components/ui/badge-simple"
 import { Navigation } from "@/components/ui/navigation"
 import { Users, Search, Plus, Edit, Eye, Phone, Mail, Calendar, CreditCard } from "lucide-react"
+import { PacienteForm } from "@/components/forms/PacienteForm"
 
 interface Paciente {
   id: number
@@ -227,54 +227,26 @@ export default function PacientesPage() {
         )}
       </div>
 
-      {/* Modal de detalle del paciente */}
-      {selectedPaciente && !showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">
-                  {selectedPaciente.nombre} {selectedPaciente.apellido}
-                </CardTitle>
-                <Button variant="outline" onClick={() => setSelectedPaciente(null)}>
-                  ✕
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">DNI</Label>
-                  <p className="text-gray-900">{selectedPaciente.dni}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Fecha de Nacimiento</Label>
-                  <p className="text-gray-900">{formatDate(selectedPaciente.fecha_nacimiento)}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Teléfono</Label>
-                  <p className="text-gray-900">{selectedPaciente.telefono || "No especificado"}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Email</Label>
-                  <p className="text-gray-900">{selectedPaciente.email || "No especificado"}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <Label className="text-sm font-medium text-gray-700">Dirección</Label>
-                  <p className="text-gray-900">{selectedPaciente.direccion || "No especificada"}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Obra Social</Label>
-                  <p className="text-gray-900">{selectedPaciente.obra_social || "Particular"}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-700">Número de Afiliado</Label>
-                  <p className="text-gray-900">{selectedPaciente.numero_afiliado || "N/A"}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Modal de formulario de paciente */}
+      {showForm && (
+        <PacienteForm
+          onClose={() => {
+            setShowForm(false)
+            setSelectedPaciente(null)
+          }}
+          onSave={(newPaciente) => {
+            // Actualizar la lista de pacientes
+            if (selectedPaciente) {
+              // Editar paciente existente
+              setPacientes((prev) => prev.map((p) => (p.id === selectedPaciente.id ? newPaciente : p)))
+            } else {
+              // Agregar nuevo paciente
+              setPacientes((prev) => [...prev, newPaciente])
+            }
+            loadPacientes() // Recargar la lista
+          }}
+          paciente={selectedPaciente}
+        />
       )}
     </div>
   )

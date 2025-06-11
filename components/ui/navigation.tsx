@@ -106,7 +106,7 @@ export function Navigation() {
             <ClinicaLogo size="sm" />
             <div className="hidden sm:block">
               <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Clínica San Martín
+                SEPRICE
               </h1>
             </div>
           </Link>

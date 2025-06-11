@@ -21,6 +21,7 @@ import {
   XCircle,
   Microscope,
 } from "lucide-react"
+import { EstudioForm } from "@/components/forms/EstudioForm"
 
 interface Estudio {
   id: number
@@ -43,6 +44,7 @@ export default function EstudiosPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterEstado, setFilterEstado] = useState<string>("todos")
+  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -172,7 +174,7 @@ export default function EstudiosPage() {
                 <p className="text-gray-600">Gestiona órdenes médicas y estudios diagnósticos</p>
               </div>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+            <Button onClick={() => setShowForm(true)} className="bg-purple-600 hover:bg-purple-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Nueva Orden
             </Button>
@@ -412,6 +414,17 @@ export default function EstudiosPage() {
           </div>
         )}
       </div>
+      {/* Modal de formulario de estudio */}
+      {showForm && (
+        <EstudioForm
+          onClose={() => setShowForm(false)}
+          onSave={(newEstudio) => {
+            // Actualizar la lista de estudios
+            setEstudios((prev) => [...prev, newEstudio])
+            loadEstudios() // Recargar la lista
+          }}
+        />
+      )}
     </div>
   )
 }
