@@ -31,8 +31,6 @@ export async function POST(request: NextRequest) {
 
     // Verificar contraseña (texto plano)
     console.log("🔑 Verificando contraseña...")
-    console.log("🔑 Contraseña en BD:", usuario.password)
-    console.log("🔑 Contraseña ingresada:", password)
 
     if (usuario.password !== password) {
       console.log("❌ Contraseña incorrecta")
@@ -41,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     console.log("✅ Login exitoso")
 
-    // Crear respuesta simple (sin JWT por ahora)
+    // Crear respuesta simple
     const response = NextResponse.json({
       message: "Login exitoso",
       user: {
@@ -64,8 +62,8 @@ export async function POST(request: NextRequest) {
         rol: usuario.rol,
       }),
       {
-        httpOnly: false, // Para que sea accesible desde el cliente
-        secure: false,
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 60 * 60 * 8, // 8 horas
       },
@@ -77,7 +75,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "Error interno del servidor",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Error desconocido",
       },
       { status: 500 },
     )
