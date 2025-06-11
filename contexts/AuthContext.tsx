@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useState, useEffect } from "react"
 
 interface User {
@@ -31,10 +30,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/auth/me")
-      if (response.ok) {
-        const userData = await response.json()
+      console.log("🔍 Verificando autenticación...")
+
+      // Primero intentar obtener de la cookie del navegador
+      const userCookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("user="))
+        ?.split("=")[1]
+
+      if (userCookie) {
+        const userData = JSON.parse(decodeURIComponent(userCookie))
+        console.log("✅ Usuario encontrado en cookie:", userData)
         setUser(userData)
+      } else {
+        console.log("❌ No hay usuario en cookie")
       }
     } catch (error) {
       console.error("Error checking auth:", error)
@@ -45,6 +54,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
+      console.log("🔐 Intentando login con:", { username })
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -53,26 +64,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ username, password }),
       })
 
+      console.log("📡 Respuesta del servidor:", response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log("✅ Login exitoso:", data)
         setUser(data.user)
         return true
+      } else {
+        const errorData = await response.json()
+        console.log("❌ Error en login:", errorData)
+        return false
       }
-      return false
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("❌ Error en login:", error)
       return false
     }
   }
 
-  const logout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" })
-    } catch (error) {
-      console.error("Logout error:", error)
-    } finally {
-      setUser(null)
-    }
+  const logout = () => {
+    setUser(null)
+    // Limpiar cookie
+    document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
   }
 
   return <AuthContext.Provider value={{ user, login, logout, loading }}>{children}</AuthContext.Provider>
