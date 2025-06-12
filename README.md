@@ -1,30 +1,118 @@
-# Clinica gestión de estudios
+# SEPRICE - Sistema de Gestión Médica
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+SEPRICE es un sistema integral para la gestión de centros médicos y diagnósticos, que permite administrar pacientes, turnos y estudios clínicos.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/eduardos-projects-4e44085f/v0-clinica-gestion-de-estudios)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/srMH8UKUvuo)
+## Requisitos previos
 
-## Overview
+- Node.js 18 o superior
+- npm 8 o superior
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## Instalación
 
-## Deployment
+1. Clona este repositorio
+2. Instala las dependencias:
 
-Your project is live at:
+\`\`\`bash
+npm install
+\`\`\`
 
-**[https://vercel.com/eduardos-projects-4e44085f/v0-clinica-gestion-de-estudios](https://vercel.com/eduardos-projects-4e44085f/v0-clinica-gestion-de-estudios)**
+## Desarrollo
 
-## Build your app
+### Aplicación web
 
-Continue building your app on:
+Para ejecutar la aplicación web en modo desarrollo:
 
-**[https://v0.dev/chat/projects/srMH8UKUvuo](https://v0.dev/chat/projects/srMH8UKUvuo)**
+\`\`\`bash
+npm run dev
+\`\`\`
 
-## How It Works
+La aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### Aplicación de escritorio (Electron)
+
+Para ejecutar la aplicación de escritorio en modo desarrollo:
+
+\`\`\`bash
+npm run electron:dev
+\`\`\`
+
+## Construcción
+
+### Aplicación web
+
+Para construir la aplicación web:
+
+\`\`\`bash
+npm run build
+\`\`\`
+
+### Aplicación de escritorio (Electron)
+
+Para construir la aplicación de escritorio:
+
+\`\`\`bash
+npm run electron:build
+\`\`\`
+
+Esto generará los archivos ejecutables en la carpeta `release`.
+
+## Estructura del proyecto
+
+- `/app`: Páginas y rutas de la aplicación Next.js
+- `/components`: Componentes React reutilizables
+- `/contexts`: Contextos de React (AuthContext, etc.)
+- `/lib`: Utilidades, modelos y funciones auxiliares
+- `/public`: Archivos estáticos
+- `/electron`: Archivos específicos de Electron
+
+## Usuarios de prueba
+
+- **Administrador**: admin / admin123
+- **Recepcionista**: recep1 / recep123
+- **Médico**: dr.smith / doc123
+- **Técnico**: tec1 / tec123
+\`\`\`
+
+Ahora, vamos a crear un archivo .gitignore para excluir archivos innecesarios:
+
+```text file=".gitignore"
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/dist
+/release
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# electron
+/dist
+/release

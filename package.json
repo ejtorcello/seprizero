@@ -1,19 +1,28 @@
 {
-  "name": "sistema-clinica",
+  "name": "seprice",
   "version": "1.0.0",
   "private": true,
+  "main": "dist/electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
+    "electron:build": "next build && tsc -p electron/tsconfig.json && electron-builder",
+    "electron:start": "npm run build && electron .",
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "@radix-ui/react-label": "latest",
     "@types/jsonwebtoken": "^9.0.0",
     "better-sqlite3": "latest",
+    "child_process": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "electron-is-dev": "latest",
+    "electron-serve": "^1.1.0",
+    "http": "latest",
     "jsonwebtoken": "latest",
     "lucide-react": "^0.454.0",
     "next": "14.2.16",
@@ -21,17 +30,49 @@
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "url": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.0",
+    "concurrently": "^8.2.2",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4",
     "eslint": "^8.0.0",
     "eslint-config-next": "14.0.0",
     "postcss": "^8.5",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.seprice.app",
+    "productName": "SEPRICE",
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      ".next/**/*",
+      "public/**/*",
+      "server.js"
+    ],
+    "directories": {
+      "buildResources": "public",
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
   }
 }
