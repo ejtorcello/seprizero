@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist/electron/main.js",
+  "homepage": "./",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "electron:dev": "concurrently \"npm run dev\" \"electron .\"",
-    "electron:build": "next build && tsc -p electron/tsconfig.json && electron-builder",
-    "electron:start": "npm run build && electron .",
+    "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000\" \"electron .\"",
+    "electron:build": "npm run build && tsc -p electron/tsconfig.json && electron-builder",
+    "electron:build-all": "npm run build && tsc -p electron/tsconfig.json && electron-builder --win --x64 --ia32",
+    "electron:start": "npm run build && tsc -p electron/tsconfig.json && electron .",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -22,6 +24,7 @@
     "clsx": "^2.1.1",
     "electron-is-dev": "latest",
     "electron-serve": "^1.1.0",
+    "electron-updater": "latest",
     "http": "latest",
     "jsonwebtoken": "latest",
     "lucide-react": "^0.454.0",
@@ -49,30 +52,118 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.seprice.app",
-    "productName": "SEPRICE",
+    "appId": "com.seprice.clinica",
+    "productName": "SEPRICE - Sistema de Gestión Médica",
+    "copyright": "Copyright © 2024 SEPRICE",
+    "compression": "maximum",
     "files": [
       "dist/**/*",
       "node_modules/**/*",
       "package.json",
       ".next/**/*",
       "public/**/*",
-      "server.js"
+      "server.js",
+      "!node_modules/.cache/**/*",
+      "!**/*.map",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "directories": {
       "buildResources": "public",
       "output": "release"
     },
+    "extraResources": [
+      {
+        "from": "public/",
+        "to": "public/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "icon": "public/favicon.ico"
+      "icon": "public/icon.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "publisherName": "SEPRICE"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SEPRICE",
+      "include": "installer.nsh",
+      "script": "installer.nsh",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "menuCategory": "Medicina",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "uninstallDisplayName": "${productName}",
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "installerSidebar": "public/installer-sidebar.bmp",
+      "uninstallerSidebar": "public/installer-sidebar.bmp"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-Portable.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "public/icon.icns",
+      "category": "public.app-category.medical"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.png",
+      "category": "Office"
     }
   }
 }
