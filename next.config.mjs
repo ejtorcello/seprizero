@@ -19,8 +19,8 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  trailingSlash: true,
-  assetPrefix: process.env.NODE_ENV === 'production' ? './' : '',
+  trailingSlash: false,
+  swcMinify: true,
 }
 
 export default nextConfig
