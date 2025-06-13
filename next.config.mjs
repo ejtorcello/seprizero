@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  experimental: {
+    serverComponentsExternalPackages: ['better-sqlite3']
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('better-sqlite3')
+    }
+    return config
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -7,8 +17,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    unoptimized: true
   },
+  trailingSlash: true,
+  assetPrefix: process.env.NODE_ENV === 'production' ? './' : '',
 }
 
 export default nextConfig
