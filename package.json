@@ -1,6 +1,8 @@
 {
   "name": "seprice",
   "version": "1.0.0",
+  "description": "Sistema integral de gestión clínica para consultorios externos y estudios clínicos",
+  "author": "SEPRICE Team <soporte@seprice.com>",
   "private": true,
   "main": "dist/electron/main.js",
   "homepage": "./",
@@ -78,25 +80,15 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "directories": {
-      "buildResources": "public",
+      "buildResources": "build",
       "output": "release"
     },
-    "extraResources": [
-      {
-        "from": "public/",
-        "to": "public/",
-        "filter": [
-          "**/*"
-        ]
-      }
-    ],
     "win": {
       "target": [
         {
           "target": "nsis",
           "arch": [
-            "x64",
-            "ia32"
+            "x64"
           ]
         },
         {
@@ -106,8 +98,6 @@
           ]
         }
       ],
-      "icon": "public/icon.ico",
-      "requestedExecutionLevel": "asInvoker",
       "artifactName": "${productName}-${version}-${arch}.${ext}",
       "publisherName": "SEPRICE"
     },
@@ -118,18 +108,11 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "SEPRICE",
-      "include": "installer.nsh",
-      "script": "installer.nsh",
       "deleteAppDataOnUninstall": false,
       "runAfterFinish": true,
       "menuCategory": "Medicina",
       "artifactName": "${productName}-Setup-${version}.${ext}",
-      "uninstallDisplayName": "${productName}",
-      "installerIcon": "public/icon.ico",
-      "uninstallerIcon": "public/icon.ico",
-      "installerHeaderIcon": "public/icon.ico",
-      "installerSidebar": "public/installer-sidebar.bmp",
-      "uninstallerSidebar": "public/installer-sidebar.bmp"
+      "uninstallDisplayName": "${productName}"
     },
     "portable": {
       "artifactName": "${productName}-${version}-Portable.${ext}"
@@ -144,7 +127,6 @@
           ]
         }
       ],
-      "icon": "public/icon.icns",
       "category": "public.app-category.medical"
     },
     "linux": {
@@ -162,7 +144,6 @@
           ]
         }
       ],
-      "icon": "public/icon.png",
       "category": "Office"
     }
   }
