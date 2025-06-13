@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SEPRICE - Iniciando...</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      max-width: 400px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      animation: pulse 2s infinite;
+    }
+    .logo svg {
+      width: 100%;
+      height: 100%;
+    }
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+    .version {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .loading-text {
+      margin-left: 12px;
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
+    }
+    .spinner {
+      border: 3px solid rgba(59, 130, 246, 0.1);
+      border-radius: 50%;
+      border-top: 3px solid #3b82f6;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      border-radius: 2px;
+      animation: progress 3s ease-in-out infinite;
+    }
+    .status {
+      font-size: 12px;
+      color: #888;
+      margin-top: 15px;
+      min-height: 16px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    @keyframes progress {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fondo circular -->
+        <circle cx="50" cy="50" r="48" fill="url(#gradient)" stroke="#1e40af" stroke-width="2" />
+        
+        <!-- Cruz médica -->
+        <rect x="45" y="25" width="10" height="50" fill="white" rx="2" />
+        <rect x="25" y="45" width="50" height="10" fill="white" rx="2" />
+        
+        <!-- Corazón pequeño en el centro -->
+        <path d="M50 55c-3-3-8-3-8 1s5 7 8 9c3-2 8-5 8-9s-5-4-8-1z" fill="#ef4444" />
+        
+        <!-- Gradiente -->
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3b82f6" />
+            <stop offset="100%" stop-color="#1d4ed8" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h1 class="title">SEPRICE</h1>
+    <p class="subtitle">Sistema de Gestión Médica</p>
+    <p class="version">Versión 1.0.0</p>
+    <div class="loading">
+      <div class="spinner"></div>
+      <span class="loading-text">Iniciando sistema...</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+    <div class="status" id="status">Preparando aplicación...</div>
+  </div>
+
+  <script>
+    const statusMessages = [
+      "Preparando aplicación...",
+      "Cargando base de datos...",
+      "Iniciando servidor...",
+      "Configurando interfaz...",
+      "Casi listo..."
+    ];
+    
+    let currentMessage = 0;
+    
+    setInterval(() => {
+      const statusElement = document.getElementById('status');
+      if (statusElement && currentMessage < statusMessages.length - 1) {
+        currentMessage++;
+        statusElement.textContent = statusMessages[currentMessage];
+      }
+    }, 800);
+  </script>
+</body>
+</html>
