@@ -1,17 +1,12 @@
 import { app, BrowserWindow, Menu, dialog, shell } from "electron"
 import * as path from "path"
-import { spawn } from "child_process"
+import { spawn, type ChildProcess } from "child_process"
 import isDev from "electron-is-dev"
-import { autoUpdater } from "electron-updater"
-
-// Configurar el auto-updater
-if (!isDev) {
-  autoUpdater.checkForUpdatesAndNotify()
-}
 
 // Mantener una referencia global del objeto window
 let mainWindow: BrowserWindow | null = null
-let nextApp: any = null
+let nextApp: ChildProcess | null = null
+let isQuiting = false
 const nextAppPort = 3000
 
 // Configurar el protocolo de la aplicación
@@ -124,12 +119,7 @@ function createWindow() {
   // Mostrar pantalla de carga
   mainWindow.loadFile(path.join(__dirname, "../electron/splash.html"))
 
-  // Configurar eventos de seguridad
-  mainWindow.webContents.on("new-window", (event, navigationUrl) => {
-    event.preventDefault()
-    shell.openExternal(navigationUrl)
-  })
-
+  // Configurar eventos de seguridad - Usar la nueva API
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: "deny" }
@@ -162,7 +152,7 @@ function createWindow() {
 
   // Manejar el evento antes de cerrar
   mainWindow.on("close", (event) => {
-    if (!app.isQuiting) {
+    if (!isQuiting) {
       event.preventDefault()
       dialog
         .showMessageBox(mainWindow!, {
@@ -173,7 +163,7 @@ function createWindow() {
         })
         .then((result) => {
           if (result.response === 0) {
-            app.isQuiting = true
+            isQuiting = true
             app.quit()
           }
         })
@@ -259,30 +249,3 @@ app.on("window-all-closed", () => {
     app.quit()
   }
 })
-
-// Manejar actualizaciones
-if (!isDev) {
-  autoUpdater.on("update-available", () => {
-    dialog.showMessageBox(mainWindow!, {
-      type: "info",
-      title: "Actualización disponible",
-      message: "Una nueva versión está disponible. Se descargará en segundo plano.",
-      buttons: ["OK"],
-    })
-  })
-
-  autoUpdater.on("update-downloaded", () => {
-    dialog
-      .showMessageBox(mainWindow!, {
-        type: "info",
-        title: "Actualización lista",
-        message: "La actualización ha sido descargada. ¿Desea reiniciar ahora para aplicarla?",
-        buttons: ["Reiniciar", "Más tarde"],
-      })
-      .then((result) => {
-        if (result.response === 0) {
-          autoUpdater.quitAndInstall()
-        }
-      })
-  })
-}

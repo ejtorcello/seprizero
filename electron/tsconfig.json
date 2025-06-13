@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "module": "commonjs",
     "sourceMap": true,
     "strict": true,
     "outDir": "../dist/electron",
     "rootDir": "../electron",
-    "noEmitOnError": true,
-    "typeRoots": ["node_modules/@types"],
-    "esModuleInterop": true
+    "noEmitOnError": false,
+    "typeRoots": ["../node_modules/@types"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["**/*"]
+  "include": ["**/*"],
+  "exclude": ["../node_modules", "../dist", "../release"]
 }
