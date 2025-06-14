@@ -1,0 +1,113 @@
+@startuml
+!theme plain
+title Diagrama de Despliegue - Sistema de Gestión Clínica
+
+' Nodos de despliegue
+node "Computadora Cliente" as client {
+  artifact "Aplicación Electron" as electron_app {
+    component "Interfaz de Usuario" as ui
+    component "Proceso Principal" as main_process
+    component "Proceso Renderer" as renderer
+  }
+  
+  artifact "Aplicación Web Embebida" as webapp {
+    component "Next.js App" as nextjs
+    component "React Components" as react
+    component "API Routes" as api_routes
+  }
+  
+  database "SQLite Local" as sqlite_local {
+    component "Base de Datos" as db_local
+    component "Archivos de Sistema" as files_local
+  }
+}
+
+node "Servidor de Desarrollo" as dev_server {
+  artifact "Entorno de Desarrollo" as dev_env {
+    component "Next.js Dev Server" as nextjs_dev
+    component "Hot Reload" as hot_reload
+    component "TypeScript Compiler" as tsc
+  }
+}
+
+node "Sistema de Archivos Local" as local_fs {
+  folder "Directorio de Datos" as data_dir {
+    file "database.sqlite" as db_file
+    file "backups/" as backup_dir
+    file "uploads/" as upload_dir
+    file "logs/" as log_dir
+  }
+}
+
+node "Herramientas de Build" as build_tools {
+  artifact "Electron Builder" as electron_builder
+  artifact "Next.js Build" as nextjs_build
+  artifact "TypeScript Build" as ts_build
+}
+
+' Conexiones
+ui --> main_process : "IPC Communication"
+main_process --> renderer : "Window Management"
+renderer --> nextjs : "Loads"
+nextjs --> react : "Renders"
+react --> api_routes : "API Calls"
+api_routes --> db_local : "Database Queries"
+db_local --> db_file : "Reads/Writes"
+
+' Desarrollo
+dev_env --> webapp : "Development Mode"
+nextjs_dev --> hot_reload : "Auto Refresh"
+tsc --> nextjs_dev : "Compiles"
+
+' Build Process
+build_tools --> electron_app : "Packages"
+electron_builder --> nextjs_build : "Includes"
+nextjs_build --> ts_build : "Compiles"
+
+' Almacenamiento
+sqlite_local --> data_dir : "Stores Data"
+files_local --> upload_dir : "Saves Files"
+files_local --> backup_dir : "Creates Backups"
+files_local --> log_dir : "Writes Logs"
+
+' Notas de despliegue
+note top of client
+  **Requisitos del Cliente:**
+  • Windows 10/11, macOS 10.15+, Linux
+  • 4GB RAM mínimo
+  • 500MB espacio en disco
+  • Resolución mínima 1024x768
+end note
+
+note right of sqlite_local
+  **Base de Datos Local:**
+  • SQLite 3.x
+  • Tamaño inicial: ~10MB
+  • Crecimiento estimado: 1GB/año
+  • Respaldos automáticos diarios
+end note
+
+note bottom of build_tools
+  **Proceso de Build:**
+  1. Compilar TypeScript
+  2. Build Next.js (SSG)
+  3. Empaquetar con Electron
+  4. Crear instaladores por plataforma
+end note
+
+' Configuración de red (si aplica)
+cloud "Red Local (Opcional)" as network {
+  node "Servidor de Respaldos" as backup_server {
+    database "Respaldos Centralizados" as central_backup
+  }
+  
+  node "Servidor de Archivos" as file_server {
+    folder "Archivos Compartidos" as shared_files
+  }
+}
+
+client ..> network : "Opcional: Respaldos en red"
+backup_dir ..> central_backup : "Sync"
+upload_dir ..> shared_files : "Share"
+
+@enduml

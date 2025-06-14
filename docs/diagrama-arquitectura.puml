@@ -1,0 +1,125 @@
+@startuml
+!theme plain
+title Diagrama de Arquitectura - Sistema de Gestión Clínica
+
+!define RECTANGLE class
+
+' Capa de Presentación
+package "Capa de Presentación" #lightblue {
+  RECTANGLE "Aplicación Electron" as electron {
+    + Interfaz de Usuario
+    + Gestión de Ventanas
+    + Menús y Navegación
+  }
+  
+  RECTANGLE "Aplicación Web" as webapp {
+    + React Components
+    + Next.js Pages
+    + Tailwind CSS
+    + Formularios
+  }
+}
+
+' Capa de Lógica de Negocio
+package "Capa de Lógica de Negocio" #lightgreen {
+  RECTANGLE "API Routes" as api {
+    + /api/pacientes
+    + /api/turnos
+    + /api/estudios
+    + /api/usuarios
+  }
+  
+  RECTANGLE "Server Actions" as actions {
+    + Validaciones
+    + Transformaciones
+    + Reglas de Negocio
+  }
+  
+  RECTANGLE "Middleware" as middleware {
+    + Autenticación JWT
+    + Autorización por Roles
+    + Logging
+    + Rate Limiting
+  }
+}
+
+' Capa de Datos
+package "Capa de Datos" #lightyellow {
+  RECTANGLE "Modelos de Datos" as models {
+    + Usuario.ts
+    + Paciente.ts
+    + Turno.ts
+    + Estudio.ts
+  }
+  
+  RECTANGLE "Servicios de Datos" as services {
+    + Database Connection
+    + Query Builder
+    + Transacciones
+    + Migraciones
+  }
+}
+
+' Capa de Persistencia
+package "Capa de Persistencia" #lightcoral {
+  database "SQLite Database" as sqlite {
+    + Tablas Principales
+    + Índices
+    + Triggers
+    + Views
+  }
+  
+  RECTANGLE "Archivos del Sistema" as files {
+    + PDFs Generados
+    + Imágenes
+    + Respaldos
+    + Logs
+  }
+}
+
+' Servicios Externos
+package "Servicios Externos" #lightgray {
+  RECTANGLE "Generador PDF" as pdf {
+    + Comprobantes
+    + Reportes
+    + Recetas
+  }
+  
+  RECTANGLE "Sistema de Archivos" as filesystem {
+    + Almacenamiento Local
+    + Gestión de Archivos
+  }
+}
+
+' Relaciones
+electron --> webapp : "Embebe"
+webapp --> api : "HTTP Requests"
+api --> actions : "Ejecuta"
+api --> middleware : "Pasa por"
+actions --> models : "Utiliza"
+models --> services : "Accede"
+services --> sqlite : "Consulta"
+services --> files : "Lee/Escribe"
+api --> pdf : "Genera"
+services --> filesystem : "Almacena"
+
+' Notas
+note right of electron
+  Aplicación de escritorio
+  multiplataforma que embebe
+  la aplicación web
+end note
+
+note bottom of sqlite
+  Base de datos local
+  para funcionamiento
+  offline y portabilidad
+end note
+
+note left of middleware
+  Intercepta todas las
+  peticiones para validar
+  autenticación y permisos
+end note
+
+@enduml

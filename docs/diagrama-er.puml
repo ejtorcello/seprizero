@@ -1,0 +1,188 @@
+@startuml
+!theme plain
+title Diagrama Entidad-Relación - Sistema de Gestión Clínica
+
+' Configuración de estilos
+skinparam entity {
+  BackgroundColor lightblue
+  BorderColor black
+}
+
+' Entidades principales
+entity "USUARIOS" as usuarios {
+  * **id** : INTEGER <<PK>>
+  --
+  username : VARCHAR(50) <<UNIQUE>>
+  password : VARCHAR(255)
+  nombre : VARCHAR(100)
+  apellido : VARCHAR(100)
+  email : VARCHAR(150) <<UNIQUE>>
+  rol : ENUM('admin','medico','recepcionista','tecnico')
+  activo : BOOLEAN
+  fecha_creacion : TIMESTAMP
+  fecha_actualizacion : TIMESTAMP
+}
+
+entity "PACIENTES" as pacientes {
+  * **id** : INTEGER <<PK>>
+  --
+  dni : VARCHAR(20) <<UNIQUE>>
+  nombre : VARCHAR(100)
+  apellido : VARCHAR(100)
+  fecha_nacimiento : DATE
+  telefono : VARCHAR(20)
+  email : VARCHAR(150)
+  direccion : TEXT
+  obra_social : VARCHAR(100)
+  numero_afiliado : VARCHAR(50)
+  activo : BOOLEAN
+  fecha_creacion : TIMESTAMP
+}
+
+entity "MEDICOS" as medicos {
+  * **id** : INTEGER <<PK>>
+  --
+  # usuario_id : INTEGER <<FK>>
+  matricula : VARCHAR(20) <<UNIQUE>>
+  especialidad : VARCHAR(100)
+  valor_consulta : DECIMAL(10,2)
+  activo : BOOLEAN
+}
+
+entity "CONSULTORIOS" as consultorios {
+  * **id** : INTEGER <<PK>>
+  --
+  numero : VARCHAR(10) <<UNIQUE>>
+  nombre : VARCHAR(100)
+  descripcion : TEXT
+  activo : BOOLEAN
+}
+
+entity "TURNOS" as turnos {
+  * **id** : INTEGER <<PK>>
+  --
+  # paciente_id : INTEGER <<FK>>
+  # medico_id : INTEGER <<FK>>
+  # consultorio_id : INTEGER <<FK>>
+  fecha_hora : DATETIME
+  duracion : INTEGER
+  estado : ENUM('programado','confirmado','atendido','cancelado')
+  modalidad_pago : ENUM('efectivo','tarjeta','obra_social')
+  monto : DECIMAL(10,2)
+  observaciones : TEXT
+  fecha_creacion : TIMESTAMP
+}
+
+entity "ORDENES_MEDICAS" as ordenes {
+  * **id** : INTEGER <<PK>>
+  --
+  # paciente_id : INTEGER <<FK>>
+  # medico_id : INTEGER <<FK>>
+  # turno_id : INTEGER <<FK>>
+  fecha_orden : DATE
+  diagnostico : TEXT
+  indicaciones : TEXT
+  estado : ENUM('pendiente','en_proceso','completada')
+  origen : ENUM('consulta','urgencia','control')
+}
+
+entity "TIPOS_ESTUDIOS" as tipos_estudios {
+  * **id** : INTEGER <<PK>>
+  --
+  nombre : VARCHAR(100) <<UNIQUE>>
+  descripcion : TEXT
+  costo : DECIMAL(10,2)
+  duracion : INTEGER
+  requiere_insumos : BOOLEAN
+  requiere_preparacion : BOOLEAN
+  instrucciones : TEXT
+  activo : BOOLEAN
+}
+
+entity "ESTUDIOS_SOLICITADOS" as estudios {
+  * **id** : INTEGER <<PK>>
+  --
+  # orden_medica_id : INTEGER <<FK>>
+  # tipo_estudio_id : INTEGER <<FK>>
+  fecha_programada : DATETIME
+  fecha_realizada : DATETIME
+  estado : ENUM('programado','en_proceso','completado','cancelado')
+  # tecnico_id : INTEGER <<FK>>
+  resultado : TEXT
+  observaciones : TEXT
+  archivo_resultado : VARCHAR(255)
+}
+
+entity "INSUMOS" as insumos {
+  * **id** : INTEGER <<PK>>
+  --
+  nombre : VARCHAR(100) <<UNIQUE>>
+  descripcion : TEXT
+  stock_actual : INTEGER
+  stock_minimo : INTEGER
+  unidad_medida : VARCHAR(20)
+  costo_unitario : DECIMAL(10,2)
+  proveedor : VARCHAR(100)
+  activo : BOOLEAN
+}
+
+entity "INSUMOS_ESTUDIOS" as insumos_estudios {
+  * **id** : INTEGER <<PK>>
+  --
+  # estudio_id : INTEGER <<FK>>
+  # insumo_id : INTEGER <<FK>>
+  cantidad_utilizada : INTEGER
+  fecha_uso : DATE
+  costo_total : DECIMAL(10,2)
+}
+
+entity "LIQUIDACIONES" as liquidaciones {
+  * **id** : INTEGER <<PK>>
+  --
+  # medico_id : INTEGER <<FK>>
+  periodo_desde : DATE
+  periodo_hasta : DATE
+  total_honorarios : DECIMAL(12,2)
+  total_descuentos : DECIMAL(12,2)
+  total_neto : DECIMAL(12,2)
+  estado : ENUM('borrador','confirmada','pagada')
+  fecha_generacion : TIMESTAMP
+  fecha_pago : DATE
+}
+
+' Relaciones
+usuarios ||--|| medicos : "es_un"
+medicos ||--o{ turnos : "programa"
+pacientes ||--o{ turnos : "asiste"
+consultorios ||--o{ turnos : "se_realiza_en"
+turnos ||--o| ordenes : "genera"
+pacientes ||--o{ ordenes : "recibe"
+medicos ||--o{ ordenes : "prescribe"
+ordenes ||--o{ estudios : "incluye"
+tipos_estudios ||--o{ estudios : "define"
+usuarios ||--o{ estudios : "realiza"
+estudios ||--o{ insumos_estudios : "consume"
+insumos ||--o{ insumos_estudios : "se_utiliza"
+medicos ||--o{ liquidaciones : "se_liquida"
+
+' Notas
+note top of usuarios
+  Tabla central de autenticación
+  Roles: admin, medico, recepcionista, tecnico
+end note
+
+note right of turnos
+  Estado del turno:
+  • programado: recién creado
+  • confirmado: paciente confirmó asistencia  
+  • atendido: consulta realizada
+  • cancelado: turno cancelado
+end note
+
+note bottom of estudios
+  Los estudios pueden requerir
+  múltiples insumos y tienen
+  seguimiento completo del proceso
+end note
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml
+!theme plain
+title Diagrama de Secuencias - Sistema de Gestión Clínica\nCaso: Programar Turno Médico
+
+actor "Recepcionista" as REC
+participant "Sistema Web" as WEB
+participant "API Backend" as API
+participant "Validador" as VAL
+database "Base de Datos" as DB
+
+== Programación de Turno ==
+
+REC -> WEB: 1. Acceder al formulario de turnos
+activate WEB
+WEB -> REC: 2. Mostrar formulario con\npacientes y médicos disponibles
+deactivate WEB
+
+REC -> WEB: 3. Completar datos del turno\n(paciente, médico, fecha, hora)
+activate WEB
+WEB -> API: 4. POST /api/turnos\n{paciente_id, medico_id, fecha_hora}
+activate API
+
+API -> VAL: 5. Validar datos del turno
+activate VAL
+note right of VAL
+  Validaciones:
+  • Disponibilidad del médico
+  • Horario válido
+  • Datos completos
+  • No conflictos
+end note
+VAL -> API: 6. Datos válidos ✓
+deactivate VAL
+
+API -> DB: 7. INSERT INTO turnos\n(paciente_id, medico_id, fecha_hora, estado)
+activate DB
+DB -> API: 8. Turno creado exitosamente\n(turno_id: 12345)
+deactivate DB
+
+API -> WEB: 9. Respuesta exitosa (201)\n{turno_id, mensaje}
+deactivate API
+WEB -> REC: 10. Confirmar turno programado\n"Turno creado exitosamente"
+deactivate WEB
+
+== Generación de Comprobante ==
+
+REC -> WEB: 11. Solicitar comprobante
+activate WEB
+WEB -> API: 12. GET /api/turnos/12345/comprobante
+activate API
+API -> API: Generar PDF con datos del turno
+API -> WEB: 13. Comprobante PDF generado
+deactivate API
+WEB -> REC: 14. Mostrar/descargar comprobante
+deactivate WEB
+
+== Flujos Alternativos ==
+
+note over REC, DB
+  **Casos de Error:**
+  • Si médico no disponible → Mostrar horarios alternativos
+  • Si datos incompletos → Solicitar información faltante  
+  • Si error del sistema → Mostrar mensaje de error
+  • Si conflicto de horario → Sugerir otros horarios
+end note
+
+@enduml

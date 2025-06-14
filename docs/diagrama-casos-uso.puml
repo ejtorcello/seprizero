@@ -1,0 +1,121 @@
+@startuml
+!theme plain
+title Diagrama de Casos de Uso - Sistema de Gestión Clínica
+
+left to right direction
+
+' Actores
+actor "Recepcionista" as REC #lightgreen
+actor "Médico" as MED #lightblue  
+actor "Administrador" as ADM #lightcoral
+actor "Técnico" as TEC #lightyellow
+actor "Paciente" as PAC #lightpink
+
+' Sistema
+rectangle "Sistema de Gestión Clínica" {
+  
+  ' Gestión de Pacientes
+  package "Gestión de Pacientes" #lightgreen {
+    usecase "Registrar\nPaciente" as UC1
+    usecase "Buscar\nPaciente" as UC2
+    usecase "Actualizar Datos\nPaciente" as UC3
+  }
+  
+  ' Gestión de Turnos
+  package "Gestión de Turnos" #lightblue {
+    usecase "Programar\nTurno" as UC4
+    usecase "Cancelar\nTurno" as UC5
+    usecase "Reprogramar\nTurno" as UC6
+    usecase "Consultar\nAgenda" as UC7
+  }
+  
+  ' Atención Médica
+  package "Atención Médica" #lightyellow {
+    usecase "Atender\nPaciente" as UC8
+    usecase "Registrar\nDiagnóstico" as UC9
+    usecase "Generar\nReceta" as UC10
+  }
+  
+  ' Estudios Clínicos
+  package "Estudios Clínicos" #lightcyan {
+    usecase "Solicitar\nEstudio" as UC11
+    usecase "Programar\nEstudio" as UC12
+    usecase "Registrar\nResultados" as UC13
+  }
+  
+  ' Administración
+  package "Administración" #lightcoral {
+    usecase "Gestionar\nUsuarios" as UC14
+    usecase "Configurar\nConsultorios" as UC15
+    usecase "Generar\nReportes" as UC16
+    usecase "Liquidar\nHonorarios" as UC17
+  }
+  
+  ' Facturación
+  package "Facturación" #lightpink {
+    usecase "Registrar\nPago" as UC18
+    usecase "Generar\nFactura" as UC19
+    usecase "Control\nObra Social" as UC20
+  }
+  
+  ' Sistema
+  package "Sistema" #lightgray {
+    usecase "Autenticar\nUsuario" as UC21
+    usecase "Generar\nRespaldos" as UC22
+  }
+}
+
+' Relaciones Recepcionista
+REC --> UC1
+REC --> UC2
+REC --> UC4
+REC --> UC5
+REC --> UC6
+REC --> UC18
+REC --> UC19
+
+' Relaciones Médico
+MED --> UC7
+MED --> UC8
+MED --> UC9
+MED --> UC10
+MED --> UC11
+
+' Relaciones Administrador
+ADM --> UC14
+ADM --> UC15
+ADM --> UC16
+ADM --> UC17
+ADM --> UC22
+
+' Relaciones Técnico
+TEC --> UC12
+TEC --> UC13
+
+' Relaciones Paciente
+PAC --> UC2
+PAC --> UC7
+
+' Relaciones de Inclusión
+UC4 ..> UC21 : <<include>>
+UC8 ..> UC21 : <<include>>
+UC14 ..> UC21 : <<include>>
+UC16 ..> UC21 : <<include>>
+
+' Relaciones de Extensión
+UC4 ..> UC19 : <<extend>>
+UC8 ..> UC11 : <<extend>>
+
+note top of UC21
+  Todos los casos de uso
+  requieren autenticación
+  previa del usuario
+end note
+
+note bottom of PAC
+  El paciente puede consultar
+  información básica sin
+  necesidad de autenticación
+end note
+
+@enduml
