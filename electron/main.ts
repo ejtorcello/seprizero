@@ -176,16 +176,20 @@ function startNextApp() {
     ? path.join(__dirname, "../node_modules/next/dist/bin/next")
     : path.join(__dirname, "../server.js")
 
+  const args = isDev ? ["dev"] : []
+  const command = isDev ? "node" : "node"
+
   if (isDev) {
     console.log("Ejecutando en modo desarrollo")
-    nextApp = spawn("node", [serverPath, "dev"], {
+    nextApp = spawn(command, [serverPath, ...args], {
       cwd: path.join(__dirname, ".."),
       stdio: "pipe",
       env: { ...process.env, PORT: nextAppPort.toString() },
+      shell: true,
     })
   } else {
     console.log("Ejecutando en modo producción")
-    nextApp = spawn("node", [serverPath], {
+    nextApp = spawn(command, [serverPath], {
       cwd: path.join(__dirname, ".."),
       env: {
         ...process.env,
@@ -194,6 +198,7 @@ function startNextApp() {
         ELECTRON: "true",
       },
       stdio: "pipe",
+      shell: true,
     })
   }
 
